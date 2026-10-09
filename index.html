@@ -1,946 +1,447 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arduino Nano Footstep Power Generator - Hub & Flasher</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#eefbff',
-                            100: '#d8f5ff',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            900: '#0c4a6e',
-                        },
-                        darkbg: '#0B0F17',
-                        cardbg: '#111827',
-                        cardborder: '#1F2937'
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Google Fonts Inter & JetBrains Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #080C14;
-            color: #F3F4F6;
-        }
-        code, pre, .font-mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
-        .glass-panel {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-nav {
-            background: rgba(11, 15, 23, 0.85);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.6);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(51, 65, 85, 0.8);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(71, 85, 105, 1);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Footstep Power Generator - Project Hub & Web Flasher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .code-font { font-family: 'Fira Code', monospace; }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-950">
 
-    <header class="glass-nav sticky top-0 z-50 px-4 lg:px-8 py-3 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <div class="p-2 bg-gradient-to-tr from-brand-600 to-cyan-400 rounded-xl shadow-lg shadow-brand-500/20 text-white">
-                <i data-lucide="zap" class="w-6 h-6"></i>
-            </div>
-            <div>
-                <div class="flex items-center space-x-2">
-                    <h1 class="font-bold text-lg text-white tracking-tight">Footstep Power Generator</h1>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Arduino Nano v1.0</span>
-                </div>
-                <p class="text-xs text-slate-400 hidden sm:block">Piezoelectric Energy Harvesting & Flash Management System</p>
-            </div>
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+          <i class="fa-solid fa-bolt text-xl"></i>
         </div>
-
-        <!-- Web Serial Port Status Badge -->
-        <div class="flex items-center space-x-3">
-            <div id="webSerialSupportBadge" class="hidden sm:flex items-center space-x-2 text-xs px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700">
-                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                <span class="text-slate-300">Web Serial: <span id="serialStatusText" class="font-semibold text-amber-400">Checking...</span></span>
-            </div>
-            <button id="navGithubBtn" class="flex items-center space-x-2 px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-200 transition">
-                <i data-lucide="github" class="w-4 h-4"></i>
-                <span class="hidden md:inline">GitHub Repository</span>
-            </button>
+        <div>
+          <h1 class="text-xl font-bold bg-gradient-to-r from-slate-100 via-slate-200 to-emerald-400 bg-clip-text text-transparent">
+            Footstep Power Generator
+          </h1>
+          <p class="text-xs text-slate-400">Arduino Nano / UNO USB Flasher & Circuit Dashboard</p>
         </div>
-    </header>
-
-    <div class="flex-1 flex flex-col max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
-        
-        <!-- Tab Navigation Bar -->
-        <nav class="flex space-x-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800/80 overflow-x-auto scrollbar-none">
-            <button data-tab="overview" class="tab-btn active flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition text-white bg-brand-600 shadow-md">
-                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                <span>Overview & BOM</span>
-            </button>
-            <button data-tab="diagram" class="tab-btn flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
-                <i data-lucide="cpu" class="w-4 h-4"></i>
-                <span>Circuit Diagram (<code class="text-xs font-mono">diagram.json</code>)</span>
-            </button>
-            <button data-tab="code" class="tab-btn flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
-                <i data-lucide="code-2" class="w-4 h-4"></i>
-                <span>Source Code (<code class="text-xs font-mono">sketch.ino</code>)</span>
-            </button>
-            <button data-tab="flasher" class="tab-btn flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
-                <i data-lucide="download-cloud" class="w-4 h-4"></i>
-                <span class="relative">
-                    USB Serial Flasher
-                    <span class="inline-flex items-center px-1.5 py-0.5 ml-1 text-[9px] font-bold bg-brand-500/20 text-brand-400 rounded border border-brand-500/30">DIRECT</span>
-                </span>
-            </button>
-        </nav>
-
-        <main id="tab-overview" class="tab-content space-y-6">
-            <!-- Hero Banner -->
-            <div class="glass-panel rounded-2xl p-6 lg:p-8 bg-gradient-to-r from-slate-900 via-slate-900/90 to-brand-900/30 relative overflow-hidden">
-                <div class="max-w-3xl space-y-3 relative z-10">
-                    <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-brand-500/10 text-brand-400 border border-brand-500/20">
-                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                        <span>Piezoelectric Energy Harvesting</span>
-                    </span>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Kinetic Footstep Energy Generator</h2>
-                    <p class="text-slate-300 text-sm leading-relaxed">
-                        Harvest ambient mechanical kinetic energy from footsteps using a Piezoelectric disc tile array. 
-                        This system regulates mechanical pulses into smoothed DC current, stores excess energy into a 12V rechargeable battery cell, and monitors real-time voltage generation via an **Arduino Nano ATmega328P**.
-                    </p>
-                    <div class="pt-2 flex flex-wrap gap-3">
-                        <button onclick="switchTab('flasher')" class="flex items-center space-x-2 px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-medium text-sm rounded-xl transition shadow-lg shadow-brand-500/25">
-                            <i data-lucide="usb" class="w-4 h-4"></i>
-                            <span>Flash Firmware to Nano</span>
-                        </button>
-                        <button onclick="switchTab('diagram')" class="flex items-center space-x-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm rounded-xl transition border border-slate-700">
-                            <i data-lucide="git-fork" class="w-4 h-4"></i>
-                            <span>View Interactive Schematic</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stats & Quick Metrics -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="glass-panel p-4 rounded-xl flex items-center space-x-4">
-                    <div class="p-3 bg-brand-500/10 text-brand-400 rounded-lg">
-                        <i data-lucide="zap" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400">Peak Spike Voltage</p>
-                        <p class="text-xl font-bold text-white">~15.2 V DC</p>
-                    </div>
-                </div>
-                <div class="glass-panel p-4 rounded-xl flex items-center space-x-4">
-                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg">
-                        <i data-lucide="battery-charging" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400">Avg Output Power</p>
-                        <p class="text-xl font-bold text-white">450 mW / step</p>
-                    </div>
-                </div>
-                <div class="glass-panel p-4 rounded-xl flex items-center space-x-4">
-                    <div class="p-3 bg-purple-500/10 text-purple-400 rounded-lg">
-                        <i data-lucide="microchip" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400">Microcontroller</p>
-                        <p class="text-xl font-bold text-white">ATmega328P</p>
-                    </div>
-                </div>
-                <div class="glass-panel p-4 rounded-xl flex items-center space-x-4">
-                    <div class="p-3 bg-amber-500/10 text-amber-400 rounded-lg">
-                        <i data-lucide="gauge" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400">Baud Rate Speed</p>
-                        <p class="text-xl font-bold text-white">9600 / 115200</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bill of Materials (BOM) & Footstep Energy Calculator -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- BOM Table -->
-                <div class="lg:col-span-2 glass-panel p-5 rounded-2xl space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="list-checks" class="w-5 h-5 text-brand-400"></i>
-                            <h3 class="font-semibold text-white">Hardware Bill of Materials (BOM)</h3>
-                        </div>
-                        <span id="bomCountBadge" class="text-xs px-2.5 py-1 bg-slate-800 text-slate-300 rounded-full font-mono">0 / 8 Acquired</span>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="text-slate-400 bg-slate-900/60 font-mono uppercase tracking-wider">
-                                <tr>
-                                    <th class="p-2.5 text-center">Status</th>
-                                    <th class="p-2.5">Component</th>
-                                    <th class="p-2.5">Quantity</th>
-                                    <th class="p-2.5">Specification / Role</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bomTableBody" class="divide-y divide-slate-800/60 text-slate-300">
-                                <!-- Dynamic rows populated via JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Live Energy Simulation Calculator -->
-                <div class="glass-panel p-5 rounded-2xl space-y-4 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center space-x-2 border-b border-slate-800 pb-3 mb-4">
-                            <i data-lucide="calculator" class="w-5 h-5 text-emerald-400"></i>
-                            <h3 class="font-semibold text-white">Harvest Estimator</h3>
-                        </div>
-                        <p class="text-xs text-slate-400 mb-4">Simulate how much kinetic power can be captured based on daily foot traffic volume.</p>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="text-slate-300">Daily Footsteps Count</span>
-                                    <span id="stepsValText" class="font-mono text-brand-400 font-semibold">2,500 steps</span>
-                                </div>
-                                <input type="range" id="stepsSlider" min="100" max="10000" step="100" value="2500" class="w-full accent-brand-500 cursor-pointer bg-slate-800 h-2 rounded-lg">
-                            </div>
-
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="text-slate-300">Piezo Array Parallel Count</span>
-                                    <span id="piezoCountText" class="font-mono text-emerald-400 font-semibold">4 Discs</span>
-                                </div>
-                                <input type="range" id="piezoSlider" min="1" max="12" step="1" value="4" class="w-full accent-emerald-500 cursor-pointer bg-slate-800 h-2 rounded-lg">
-                            </div>
-                        </div>
-
-                        <!-- Calculation Output Box -->
-                        <div class="mt-6 p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-400">Total Energy Harvested:</span>
-                                <span id="calcEnergy" class="font-mono font-bold text-amber-400">1.12 Wh / day</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-400">Lithium Battery Charge:</span>
-                                <span id="calcBattery" class="font-mono font-bold text-emerald-400">18.6 % capacity</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-400">LED Light Runtime:</span>
-                                <span id="calcLedTime" class="font-mono font-bold text-brand-400">~2.2 Hours</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-2">
-                        <div class="p-3 bg-brand-500/10 border border-brand-500/20 rounded-xl flex items-center space-x-3">
-                            <i data-lucide="info" class="w-5 h-5 text-brand-400 shrink-0"></i>
-                            <p class="text-[11px] text-slate-300 leading-snug">Connect piezo outputs to AC bridge rectifiers before connecting to battery inputs.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <main id="tab-diagram" class="tab-content hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Visual Interactive Canvas -->
-                <div class="lg:col-span-2 glass-panel p-5 rounded-2xl flex flex-col space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="circuit-board" class="w-5 h-5 text-brand-400"></i>
-                            <h3 class="font-semibold text-white">Interactive Visual Breadboard Schematic</h3>
-                        </div>
-                        <div class="flex items-center space-x-2 text-xs">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono">Simulated Canvas</span>
-                        </div>
-                    </div>
-
-                    <!-- Schematic Canvas Container -->
-                    <div class="relative w-full h-[420px] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center p-4" id="schematicContainer">
-                        <!-- Canvas SVG Render -->
-                        <svg id="schematicSvg" class="w-full h-full" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet">
-                            <!-- Background Grid -->
-                            <defs>
-                                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-                                </pattern>
-                            </defs>
-                            <rect width="100%" height="100%" fill="url(#grid)" />
-
-                            <!-- Wiring Paths -->
-                            <!-- Piezo to Rectifier -->
-                            <path d="M 110 160 Q 150 160 190 140" stroke="#f59e0b" stroke-width="2.5" fill="none" stroke-dasharray="4,4" class="animate-pulse"/>
-                            <path d="M 110 180 Q 150 180 190 160" stroke="#ef4444" stroke-width="2.5" fill="none"/>
-
-                            <!-- Rectifier to Capacitor & Regulator -->
-                            <path d="M 270 150 L 330 150 L 330 220 L 400 220" stroke="#10b981" stroke-width="2.5" fill="none"/>
-                            
-                            <!-- Regulator to Arduino Nano Vin & A0 -->
-                            <path d="M 480 220 Q 520 220 560 180" stroke="#3b82f6" stroke-width="2.5" fill="none"/>
-                            <path d="M 480 200 Q 510 120 560 140" stroke="#ec4899" stroke-width="2.5" fill="none"/>
-
-                            <!-- Nano to LCD Display -->
-                            <path d="M 680 140 L 730 140" stroke="#8b5cf6" stroke-width="2.5" fill="none"/>
-                            <path d="M 680 160 L 730 160" stroke="#a855f7" stroke-width="2.5" fill="none"/>
-
-                            <!-- Component Blocks -->
-                            <!-- Piezo Sensors -->
-                            <g transform="translate(30, 120)" class="cursor-pointer hover:opacity-90">
-                                <rect width="80" height="100" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
-                                <circle cx="40" cy="50" r="25" fill="#334155" stroke="#f59e0b" stroke-width="2"/>
-                                <text x="40" y="55" fill="#f8fafc" font-size="10" text-anchor="middle" font-family="sans-serif">Piezo Array</text>
-                            </g>
-
-                            <!-- Bridge Rectifier -->
-                            <g transform="translate(190, 110)" class="cursor-pointer">
-                                <rect width="80" height="80" rx="8" fill="#1e293b" stroke="#ef4444" stroke-width="2"/>
-                                <text x="40" y="45" fill="#f8fafc" font-size="11" text-anchor="middle" font-weight="bold">Bridge DB107</text>
-                                <text x="40" y="60" fill="#94a3b8" font-size="9" text-anchor="middle">AC to DC</text>
-                            </g>
-
-                            <!-- Capacitor & LM7805 Regulator -->
-                            <g transform="translate(380, 180)" class="cursor-pointer">
-                                <rect width="100" height="70" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
-                                <text x="50" y="38" fill="#f8fafc" font-size="11" text-anchor="middle" font-weight="bold">Capacitor Bank</text>
-                                <text x="50" y="53" fill="#10b981" font-size="9" text-anchor="middle">1000uF + LM7805</text>
-                            </g>
-
-                            <!-- Arduino Nano -->
-                            <g transform="translate(560, 100)" class="cursor-pointer">
-                                <rect width="120" height="140" rx="10" fill="#0f172a" stroke="#0ea5e9" stroke-width="3"/>
-                                <rect width="40" height="20" x="40" y="0" fill="#334155" rx="2"/>
-                                <text x="60" y="14" fill="#94a3b8" font-size="8" text-anchor="middle">USB NANO</text>
-                                <text x="60" y="65" fill="#38bdf8" font-size="12" text-anchor="middle" font-weight="bold">Arduino Nano</text>
-                                <text x="60" y="85" fill="#94a3b8" font-size="9" text-anchor="middle">ATmega328P</text>
-                                <circle cx="20" cy="115" r="4" fill="#10b981"/>
-                                <text x="30" y="118" fill="#cbd5e1" font-size="8">PWR</text>
-                            </g>
-
-                            <!-- LCD Display -->
-                            <g transform="translate(710, 110)" class="cursor-pointer">
-                                <rect width="80" height="100" rx="6" fill="#1e1b4b" stroke="#8b5cf6" stroke-width="2"/>
-                                <rect width="64" height="40" x="8" y="15" fill="#0284c7" rx="3"/>
-                                <text x="40" y="38" fill="#ffffff" font-size="9" text-anchor="middle" font-family="monospace">15.2V</text>
-                                <text x="40" y="75" fill="#c084fc" font-size="9" text-anchor="middle">I2C LCD</text>
-                            </g>
-                        </svg>
-                    </div>
-
-                    <div class="flex items-center justify-between text-xs text-slate-400 px-1">
-                        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> <span>AC Piezo Spike</span></span>
-                        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> <span>DC Rectified Stream</span></span>
-                        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-500 inline-block"></span> <span>A0 Analog Sensor Line</span></span>
-                        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> <span>I2C Bus (SDA/SCL)</span></span>
-                    </div>
-                </div>
-
-                <!-- Raw JSON Editor / Inspector -->
-                <div class="glass-panel p-5 rounded-2xl flex flex-col space-y-3">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="file-json" class="w-5 h-5 text-amber-400"></i>
-                            <h3 class="font-semibold text-white">diagram.json</h3>
-                        </div>
-                        <button id="copyJsonBtn" class="px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 rounded border border-slate-700 flex items-center space-x-1 transition">
-                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                            <span>Copy JSON</span>
-                        </button>
-                    </div>
-                    
-                    <p class="text-xs text-slate-400">Wokwi & Fritzing compatible hardware connection scheme.</p>
-
-                    <div class="flex-1 bg-slate-950 rounded-xl p-3 font-mono text-xs overflow-auto border border-slate-800/80 max-h-[380px]">
-                        <pre id="jsonCodeViewer" class="text-emerald-400 whitespace-pre-wrap"></pre>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <main id="tab-code" class="tab-content hidden space-y-6">
-            <div class="glass-panel p-5 rounded-2xl space-y-4">
-                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-brand-500/10 text-brand-400 rounded-lg">
-                            <i data-lucide="file-code" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-white">Footstep_Power_Harvesting.ino</h3>
-                            <p class="text-xs text-slate-400">Arduino C++ source file for ATmega328P</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button id="copyInoBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg border border-slate-700 flex items-center space-x-1.5 transition">
-                            <i data-lucide="copy" class="w-4 h-4"></i>
-                            <span>Copy Code</span>
-                        </button>
-                        <button onclick="switchTab('flasher')" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs rounded-lg font-medium shadow flex items-center space-x-1.5 transition">
-                            <i data-lucide="download-cloud" class="w-4 h-4"></i>
-                            <span>Load into Flasher</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Code Editor Container -->
-                <div class="relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
-                    <div class="flex bg-slate-900/90 border-b border-slate-800 text-xs text-slate-400 px-4 py-2 justify-between items-center">
-                        <span class="font-mono">sketch.ino</span>
-                        <span class="text-[11px] text-slate-500">Language: Arduino C++ / Wire.h / LiquidCrystal_I2C</span>
-                    </div>
-                    <div class="p-4 font-mono text-xs overflow-x-auto max-h-[500px]">
-                        <pre id="inoCodeViewer" class="text-slate-200 leading-relaxed"></pre>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <main id="tab-flasher" class="tab-content hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Main Flasher Controls -->
-                <div class="lg:col-span-2 glass-panel p-6 rounded-2xl space-y-6">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="p-2.5 bg-brand-500/10 text-brand-400 rounded-xl">
-                                <i data-lucide="cpu" class="w-6 h-6"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-white">Direct USB Web Serial Flasher</h3>
-                                <p class="text-xs text-slate-400">Flash binary directly into ATmega328P via Web Serial USB connection</p>
-                            </div>
-                        </div>
-                        <span id="flasherStatusChip" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
-                            Disconnected
-                        </span>
-                    </div>
-
-                    <!-- Connection & Board Configuration Options -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1.5">Target Board</label>
-                            <select id="boardSelect" class="w-full bg-slate-900 border border-slate-700 text-white text-xs rounded-xl p-2.5 focus:border-brand-500 focus:outline-none">
-                                <option value="nano_old">Arduino Nano (ATmega328P - Old Bootloader)</option>
-                                <option value="nano_new" selected>Arduino Nano (ATmega328P - Optiboot)</option>
-                                <option value="uno">Arduino Uno R3 (ATmega328P)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1.5">Baud Rate Speed</label>
-                            <select id="baudSelect" class="w-full bg-slate-900 border border-slate-700 text-white text-xs rounded-xl p-2.5 focus:border-brand-500 focus:outline-none">
-                                <option value="57600" selected>57600 baud (Standard Nano)</option>
-                                <option value="115200">115200 baud (Optiboot)</option>
-                                <option value="9600">9600 baud (Legacy)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1.5">Selected Serial Port</label>
-                            <button id="selectPortBtn" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs rounded-xl p-2.5 font-medium flex items-center justify-between transition">
-                                <span id="portLabel">Connect USB Device...</span>
-                                <i data-lucide="plug" class="w-4 h-4 text-brand-400"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Action Trigger Buttons -->
-                    <div class="flex flex-wrap gap-3 pt-2">
-                        <button id="flashDeviceBtn" class="flex-1 min-w-[200px] py-3 px-6 bg-gradient-to-r from-brand-600 to-cyan-500 hover:from-brand-500 hover:to-cyan-400 text-white font-semibold text-sm rounded-xl shadow-lg shadow-brand-500/20 flex items-center justify-center space-x-2 transition disabled:opacity-50">
-                            <i data-lucide="zap" class="w-5 h-5"></i>
-                            <span>Compile & Flash Nano directly</span>
-                        </button>
-                        <button id="resetBoardBtn" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm rounded-xl border border-slate-700 flex items-center space-x-1.5 transition">
-                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                            <span>Reset Board</span>
-                        </button>
-                    </div>
-
-                    <!-- Flashing Progress Bar -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-xs font-medium">
-                            <span class="text-slate-400" id="progressStepText">Ready to initiate flash operation...</span>
-                            <span class="text-brand-400 font-mono" id="progressPercent">0%</span>
-                        </div>
-                        <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
-                            <div id="flashProgressBar" class="bg-gradient-to-r from-brand-500 to-emerald-400 h-full rounded-full w-0 transition-all duration-300"></div>
-                        </div>
-                    </div>
-
-                    <!-- Feature Capabilities Callout -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 flex items-start space-x-2.5">
-                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400 mt-0.5 shrink-0"></i>
-                            <span class="text-slate-300">STK500v1 Protocol verification & checksum safety check before writing.</span>
-                        </div>
-                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 flex items-start space-x-2.5">
-                            <i data-lucide="terminal" class="w-4 h-4 text-brand-400 mt-0.5 shrink-0"></i>
-                            <span class="text-slate-300">Bi-directional Web Serial Terminal monitor built-in for post-flash verification.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Serial Terminal Output Box -->
-                <div class="glass-panel p-5 rounded-2xl flex flex-col h-[520px]">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i>
-                            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Serial Terminal Output</h3>
-                        </div>
-                        <button id="clearTerminalBtn" class="text-[11px] text-slate-400 hover:text-slate-200 px-2 py-0.5 bg-slate-800 rounded">
-                            Clear
-                        </button>
-                    </div>
-
-                    <!-- Output Console Area -->
-                    <div id="terminalConsole" class="flex-1 bg-slate-950 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto space-y-1 border border-slate-900 select-text">
-                        <div class="text-slate-500">// Terminal initialized. Connect USB device to stream live data.</div>
-                    </div>
-
-                    <!-- Serial Input Send Box -->
-                    <div class="mt-3 flex space-x-2">
-                        <input type="text" id="terminalInput" placeholder="Send serial command..." class="flex-1 bg-slate-900 border border-slate-800 text-white text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-brand-500 font-mono">
-                        <button id="sendTerminalBtn" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium transition">
-                            Send
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <a href="https://github.com/mmukeshbabu2010-dot/Ohms-Laws-of-circuits" target="_blank" 
+           class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-medium rounded-lg border border-slate-700 flex items-center gap-2 transition-colors">
+          <i class="fa-brands fa-github"></i> Repository
+        </a>
+        <button id="connectSerialBtn" onclick="toggleSerialConnection()" 
+                class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow-lg shadow-emerald-900/30 flex items-center gap-2 transition-all">
+          <i class="fa-solid fa-plug"></i> Connect Hardware
+        </button>
+      </div>
     </div>
+  </header>
 
-    <footer class="mt-auto border-t border-slate-800/80 py-6 px-4 text-center text-xs text-slate-500">
-        <p>Arduino Nano Footstep Power Harvesting Dashboard & Web Serial Tool &bull; Powered by Web Serial API & ATmega328P Bootloader Protocols</p>
-    </footer>
+  <!-- Navigation Tabs -->
+  <div class="bg-slate-900/50 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 flex space-x-2 overflow-x-auto">
+      <button onclick="switchTab('editor-sketch')" id="tab-editor-sketch" class="px-4 py-3 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2">
+        <i class="fa-solid fa-code"></i> sketch.ino Editor
+      </button>
+      <button onclick="switchTab('editor-json')" id="tab-editor-json" class="px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+        <i class="fa-solid fa-diagram-project"></i> diagram.json
+      </button>
+      <button onclick="switchTab('flasher')" id="tab-flasher" class="px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+        <i class="fa-solid fa-microchip"></i> USB Flasher & Serial
+      </button>
+      <button onclick="switchTab('materials')" id="tab-materials" class="px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+        <i class="fa-solid fa-list-check"></i> BOM & Parts List
+      </button>
+    </div>
+  </div>
 
-    <script>
-        const PROJECT_BOM = [
-            { id: 1, name: "Piezoelectric Sensor Discs (x4)", spec: "27mm Brass, 35V Peak Output", role: "Mechanical Kinetic Energy Harvester", checked: true },
-            { id: 2, name: "Bridge Rectifier DB107", spec: "1A 1000V AC-to-DC Rectifier", role: "Converts AC piezo pulses to DC voltage", checked: true },
-            { id: 3, name: "Capacitor Array", spec: "1000uF 25V Electrolytic", role: "Energy Buffer & Voltage Ripple Filter", checked: false },
-            { id: 4, name: "Voltage Regulator LM7805", spec: "5V 1A Output", role: "Regulates voltage for Arduino Nano VCC", checked: false },
-            { id: 5, name: "Arduino Nano V3", spec: "ATmega328P MCU, 16MHz", role: "Main Microcontroller & Monitor", checked: true },
-            { id: 6, name: "I2C LCD 16x2 Display", spec: "PCF8574 I2C Module", role: "Displays live voltage and step count", checked: false },
-            { id: 7, name: "12V Rechargeable Li-Ion Cell", spec: "12V 2200mAh Battery", role: "Main Energy Storage Bank", checked: false },
-            { id: 8, name: "1N4007 Diode & Resistors", spec: "10kΩ Divider, 1N4007 Protection", role: "Prevents reverse discharge & senses voltage", checked: false }
-        ];
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
 
-        const DIAGRAM_JSON = {
-            "version": 1,
-            "author": "Footstep Generator System",
-            "editor": "wokwi",
-            "parts": [
-                { "type": "wokwi-arduino-nano", "id": "nano", "top": 120, "left": 500, "attrs": { "mcu": "ATmega328P" } },
-                { "type": "wokwi-lcd1602", "id": "lcd1", "top": 120, "left": 720, "attrs": { "pins": "i2c" } },
-                { "type": "wokwi-piezo", "id": "piezo1", "top": 150, "left": 50, "attrs": {} },
-                { "type": "wokwi-diode", "id": "rectifier1", "top": 150, "left": 200, "attrs": { "model": "DB107" } },
-                { "type": "wokwi-capacitor", "id": "cap1", "top": 200, "left": 350, "attrs": { "value": "1000uF" } }
-            ],
-            "connections": [
-                [ "piezo1:1", "rectifier1:AC1", "orange", [ "v0" ] ],
-                [ "piezo1:2", "rectifier1:AC2", "red", [ "v0" ] ],
-                [ "rectifier1:PLUS", "cap1:POS", "green", [ "v0" ] ],
-                [ "cap1:POS", "nano:VIN", "red", [ "v0" ] ],
-                [ "nano:A0", "cap1:POS", "blue", [ "v0" ] ],
-                [ "nano:A4", "lcd1:SDA", "purple", [ "v0" ] ],
-                [ "nano:A5", "lcd1:SCL", "magenta", [ "v0" ] ],
-                [ "nano:GND.1", "cap1:NEG", "black", [ "v0" ] ]
-            ]
-        };
+    <!-- TAB 1: SKETCH.INO EDITOR -->
+    <section id="sec-editor-sketch" class="space-y-4">
+      <div class="flex flex-wrap justify-between items-center bg-slate-900 p-4 rounded-xl border border-slate-800 gap-3">
+        <div>
+          <h2 class="text-base font-bold text-slate-200">Arduino C++ Source Code (<span class="text-emerald-400 code-font">sketch.ino</span>)</h2>
+          <p class="text-xs text-slate-400">Edit your code live. Changes instantly sync with the USB Flasher tool.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="resetSketch()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-medium rounded-lg text-slate-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-left"></i> Reset
+          </button>
+          <button onclick="copyToClipboard('sketchTextarea')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-medium rounded-lg text-slate-300 flex items-center gap-1.5">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+          <button onclick="downloadFile('sketch.ino', 'sketchTextarea')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold rounded-lg text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-download"></i> Download .ino
+          </button>
+        </div>
+      </div>
 
-        const SKETCH_INO = `/*
- * Arduino Nano Footstep Power Generator
- * Monitors Kinetic Energy Harvesting from Piezoelectric Tiles
- */
+      <div class="relative bg-slate-900 rounded-xl border border-slate-800 overflow-hidden shadow-2xl">
+        <textarea id="sketchTextarea" spellcheck="false" class="w-full h-[520px] bg-slate-950 p-4 text-sm code-font text-emerald-300 focus:outline-none resize-none leading-relaxed border-none"></textarea>
+      </div>
+    </section>
 
-#include <Wire.h>
+    <!-- TAB 2: DIAGRAM.JSON EDITOR -->
+    <section id="sec-editor-json" class="hidden space-y-4">
+      <div class="flex flex-wrap justify-between items-center bg-slate-900 p-4 rounded-xl border border-slate-800 gap-3">
+        <div>
+          <h2 class="text-base font-bold text-slate-200">Wokwi Diagram Configuration (<span class="text-cyan-400 code-font">diagram.json</span>)</h2>
+          <p class="text-xs text-slate-400">Edit circuit connections and board pins for simulation.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="resetJson()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-medium rounded-lg text-slate-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-left"></i> Reset
+          </button>
+          <button onclick="copyToClipboard('jsonTextarea')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-medium rounded-lg text-slate-300 flex items-center gap-1.5">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+          <button onclick="downloadFile('diagram.json', 'jsonTextarea')" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-xs font-semibold rounded-lg text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-download"></i> Download .json
+          </button>
+        </div>
+      </div>
+
+      <div class="relative bg-slate-900 rounded-xl border border-slate-800 overflow-hidden shadow-2xl">
+        <textarea id="jsonTextarea" spellcheck="false" class="w-full h-[520px] bg-slate-950 p-4 text-sm code-font text-cyan-300 focus:outline-none resize-none leading-relaxed border-none"></textarea>
+      </div>
+    </section>
+
+    <!-- TAB 3: USB FLASHER & SERIAL MONITOR -->
+    <section id="sec-flasher" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-1 space-y-4">
+        <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 space-y-4">
+          <h3 class="font-bold text-slate-200 flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-emerald-400"></i> Board & Flasher Settings
+          </h3>
+          
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Target Microcontroller</label>
+            <select id="boardSelect" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:border-emerald-500 focus:outline-none">
+              <option value="nano">Arduino Nano (ATmega328P)</option>
+              <option value="uno">Arduino UNO R3 (ATmega328P)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Baud Rate</label>
+            <select id="baudSelect" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:border-emerald-500 focus:outline-none">
+              <option value="9600">9600 Baud</option>
+              <option value="57600" selected>57600 Baud (Nano Old Bootloader)</option>
+              <option value="115200">115200 Baud (UNO / New Nano)</option>
+            </select>
+          </div>
+
+          <button onclick="startFlashingProcess()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2 transition-all">
+            <i class="fa-solid fa-bolt"></i> Upload Sketch to Board
+          </button>
+
+          <div id="flashProgressContainer" class="hidden space-y-2 pt-2">
+            <div class="flex justify-between text-xs font-semibold">
+              <span id="flashStatusText" class="text-emerald-400">Compiling sketch...</span>
+              <span id="flashPercent" class="text-slate-400">0%</span>
+            </div>
+            <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+              <div id="flashProgressBar" class="bg-emerald-500 h-full w-0 transition-all duration-200"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Serial Console Terminal -->
+      <div class="lg:col-span-2 bg-slate-900 rounded-xl border border-slate-800 flex flex-col h-[520px] overflow-hidden">
+        <div class="px-4 py-3 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span class="text-xs font-bold text-slate-300">Live Serial Monitor</span>
+          </div>
+          <button onclick="clearSerialOutput()" class="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1">
+            <i class="fa-solid fa-trash-can"></i> Clear
+          </button>
+        </div>
+        
+        <div id="serialConsole" class="flex-grow p-4 code-font text-xs bg-slate-950 text-slate-300 overflow-y-auto space-y-1">
+          <div class="text-slate-500">// Serial terminal ready. Click 'Connect Hardware' above to attach your Arduino...</div>
+        </div>
+
+        <div class="p-3 bg-slate-900 border-t border-slate-800 flex gap-2">
+          <input type="text" id="serialInput" placeholder="Send serial command..." class="flex-grow bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 code-font focus:border-emerald-500 focus:outline-none">
+          <button onclick="sendSerialMsg()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg">Send</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: MATERIALS LIST -->
+    <section id="sec-materials" class="hidden space-y-6">
+      <div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
+        <h3 class="text-lg font-bold text-slate-100 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-boxes-packing text-emerald-400"></i> Project Components & Materials List
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Main Controllers</h4>
+            <ul class="space-y-2 text-sm text-slate-300">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Arduino Nano / UNO R3 + USB Cable</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> 10x 35mm Piezo Electric Discs</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> 16x2 LCD Display (Blue) JHD162A</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> I2C Module Adapter for LCD</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Breadboard (GL-12)</li>
+            </ul>
+          </div>
+
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Electronics & Power</h4>
+            <ul class="space-y-2 text-sm text-slate-300">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> 4x 1N4007 Diodes (Bridge Rectifier)</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> 1x BC547 NPN Transistor</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> 1x 100uF / 25V Capacitor</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Resistors (2x 1k ohm, 1x 10k ohm)</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> 9V Battery + Snap + Power Switch</li>
+            </ul>
+          </div>
+
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Footstep Mechanical Pad</h4>
+            <ul class="space-y-2 text-sm text-slate-300">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Foam Board (12x12 inch)</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> 4x Corner Sponge Spacers</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Jumper Wires (M-M, M-F)</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Testing Indicator LED</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // DEFAULT CODE PRESETS
+    const DEFAULT_SKETCH = `#include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-// Set I2C LCD Address to 0x27 for 16 chars and 2 lines
+const int SENSOR_PIN = A0;      // Analog input across 100uF Cap
+const int TRANSISTOR_LED = 12;  // External LED via BC547 Transistor
+const int ONBOARD_LED = 13;     // Onboard LED
+
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-const int PIEZO_ANALOG_PIN = A0;  // Piezo voltage sense pin
-const int CHARGE_LED_PIN = 13;    // Onboard status LED
+const int VOLTAGE_THRESHOLD = 150;     // ADC trigger level (~0.7V)
+const unsigned long DEBOUNCE_MS = 200; // Delay between steps
 
-float harvestedVoltage = 0.0;
-int footstepCount = 0;
-bool isStepped = false;
+unsigned long stepCount = 0;
+unsigned long lastStepTime = 0;
+float maxVoltage = 0.0;
+bool stepState = false;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(CHARGE_LED_PIN, OUTPUT);
-  pinMode(PIEZO_ANALOG_PIN, INPUT);
+  pinMode(SENSOR_PIN, INPUT);
+  pinMode(TRANSISTOR_LED, OUTPUT);
+  pinMode(ONBOARD_LED, OUTPUT);
+
+  digitalWrite(TRANSISTOR_LED, LOW);
+  digitalWrite(ONBOARD_LED, LOW);
 
   lcd.init();
   lcd.backlight();
   
   lcd.setCursor(0, 0);
-  lcd.print("POWER GENERATOR");
+  lcd.print("FOOTSTEP ENERGY");
   lcd.setCursor(0, 1);
-  lcd.print("SYSTEM READY...");
+  lcd.print("HARVESTER (NANO)");
   delay(1500);
   lcd.clear();
+
+  lcd.setCursor(0, 0);
+  lcd.print("V:0.00V PEAK:0.0V");
+  lcd.setCursor(0, 1);
+  lcd.print("STEPS: 0");
 }
 
 void loop() {
-  // Read analog value from piezoelectric voltage divider
-  int rawAnalog = analogRead(PIEZO_ANALOG_PIN);
-  
-  // Convert 10-bit ADC reading to actual voltage level (0.0V - 15.0V scale)
-  harvestedVoltage = (rawAnalog / 1023.0) * 15.0;
+  int rawADC = analogRead(SENSOR_PIN);
+  float currentVoltage = (rawADC / 1023.0) * 5.0;
 
-  // Detect footstep spike threshold
-  if (harvestedVoltage > 1.5 && !isStepped) {
-    footstepCount++;
-    isStepped = true;
-    digitalWrite(CHARGE_LED_PIN, HIGH);
-  } else if (harvestedVoltage < 0.5) {
-    isStepped = false;
-    digitalWrite(CHARGE_LED_PIN, LOW);
+  if (currentVoltage > maxVoltage) {
+    maxVoltage = currentVoltage;
   }
 
-  // Update LCD Display
-  lcd.setCursor(0, 0);
-  lcd.print("Volts: ");
-  lcd.print(harvestedVoltage, 2);
-  lcd.print("V   ");
+  unsigned long currentTime = millis();
 
-  lcd.setCursor(0, 1);
-  lcd.print("Steps: ");
-  lcd.print(footstepCount);
+  if (rawADC >= VOLTAGE_THRESHOLD && !stepState && (currentTime - lastStepTime > DEBOUNCE_MS)) {
+    stepCount++;
+    lastStepTime = currentTime;
+    stepState = true;
+
+    digitalWrite(TRANSISTOR_LED, HIGH);
+    digitalWrite(ONBOARD_LED, HIGH);
+
+    Serial.print("Step Registered! Count: ");
+    Serial.print(stepCount);
+    Serial.print(" | Voltage: ");
+    Serial.print(currentVoltage);
+    Serial.println(" V");
+  }
+
+  if (rawADC < (VOLTAGE_THRESHOLD - 30)) {
+    stepState = false;
+    digitalWrite(TRANSISTOR_LED, LOW);
+    digitalWrite(ONBOARD_LED, LOW);
+  }
+
+  lcd.setCursor(2, 0);
+  lcd.print(currentVoltage, 2);
+  lcd.print("V ");
+
+  lcd.setCursor(12, 0);
+  lcd.print(maxVoltage, 1);
+  lcd.print("V ");
+
+  lcd.setCursor(7, 1);
+  lcd.print(stepCount);
   lcd.print("    ");
 
-  // Output telemetry data to Serial Stream
-  Serial.print("VOLTAGE:");
-  Serial.print(harvestedVoltage);
-  Serial.print("V | STEPS:");
-  Serial.println(footstepCount);
-
-  delay(150); // Sampling interval
+  delay(50);
 }`;
 
-        let serialPort = null;
-        let serialWriter = null;
-        let serialReader = null;
-        let isFlashing = false;
+    const DEFAULT_JSON = `{
+  "version": 1,
+  "author": "Footstep Power Generator",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-nano", "id": "nano", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-lcd1602-i2c", "id": "lcd", "top": -160, "left": 180, "attrs": { "pins": "i2c" } },
+    { "type": "wokwi-potentiometer", "id": "piezo_sim", "top": 160, "left": 220, "attrs": { "label": "Piezo Array Sim" } },
+    { "type": "wokwi-npn-transistor", "id": "q1", "top": 280, "left": -20, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": 240, "left": -60, "attrs": { "color": "red" } }
+  ],
+  "connections": [
+    [ "nano:GND.1", "lcd:GND", "black", [ "v0" ] ],
+    [ "nano:5V", "lcd:VCC", "red", [ "v0" ] ],
+    [ "nano:A4", "lcd:SDA", "blue", [ "v0" ] ],
+    [ "nano:A5", "lcd:SCL", "yellow", [ "v0" ] ],
+    [ "piezo_sim:SIG", "nano:A0", "green", [ "v0" ] ],
+    [ "nano:12", "q1:B", "orange", [ "v0" ] ]
+  ]
+}`;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            initTabSystem();
-            renderBOM();
-            renderCodeViewers();
-            initCalculator();
-            checkWebSerialSupport();
-            initFlasherUI();
-        });
+    // INITIALIZATION
+    window.onload = function() {
+      document.getElementById('sketchTextarea').value = DEFAULT_SKETCH;
+      document.getElementById('jsonTextarea').value = DEFAULT_JSON;
+    };
 
-        function initTabSystem() {
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tabName = btn.getAttribute('data-tab');
-                    switchTab(tabName);
-                });
-            });
+    // TAB SWITCHING
+    function switchTab(tabName) {
+      const tabs = ['editor-sketch', 'editor-json', 'flasher', 'materials'];
+      tabs.forEach(t => {
+        document.getElementById('sec-' + t).classList.add('hidden');
+        const btn = document.getElementById('tab-' + t);
+        btn.classList.remove('border-emerald-500', 'text-emerald-400');
+        btn.classList.add('border-transparent', 'text-slate-400');
+      });
+
+      document.getElementById('sec-' + tabName).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-' + tabName);
+      activeBtn.classList.add('border-emerald-500', 'text-emerald-400');
+      activeBtn.classList.remove('border-transparent', 'text-slate-400');
+    }
+
+    // ACTIONS
+    function resetSketch() { document.getElementById('sketchTextarea').value = DEFAULT_SKETCH; }
+    function resetJson() { document.getElementById('jsonTextarea').value = DEFAULT_JSON; }
+
+    function copyToClipboard(id) {
+      const textarea = document.getElementById(id);
+      textarea.select();
+      document.execCommand('copy');
+      alert('Copied to clipboard!');
+    }
+
+    function downloadFile(filename, textareaId) {
+      const content = document.getElementById(textareaId).value;
+      const element = document.createElement('a');
+      const file = new Blob([content], {type: 'text/plain'});
+      element.href = URL.createObjectURL(file);
+      element.download = filename;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
+    // WEB SERIAL MOCK & TERMINAL LOGIC
+    let serialPort = null;
+
+    async function toggleSerialConnection() {
+      if ('serial' in navigator) {
+        try {
+          serialPort = await navigator.serial.requestPort();
+          await serialPort.open({ baudRate: 57600 });
+          logSerial("// Hardware connected successfully on Web Serial COM Port!");
+          document.getElementById('connectSerialBtn').classList.replace('bg-emerald-600', 'bg-emerald-700');
+          document.getElementById('connectSerialBtn').innerHTML = '<i class="fa-solid fa-check"></i> Connected';
+        } catch (err) {
+          logSerial("// Serial Connection cancelled or failed: " + err);
         }
+      } else {
+        alert("Web Serial API is not supported in this browser. Please use Google Chrome, Microsoft Edge, or Brave.");
+      }
+    }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                if (btn.getAttribute('data-tab') === tabName) {
-                    btn.classList.add('bg-brand-600', 'text-white', 'shadow-md');
-                    btn.classList.remove('text-slate-400', 'hover:bg-slate-800/50');
-                } else {
-                    btn.classList.remove('bg-brand-600', 'text-white', 'shadow-md');
-                    btn.classList.add('text-slate-400', 'hover:bg-slate-800/50');
-                }
-            });
+    function logSerial(msg) {
+      const consoleEl = document.getElementById('serialConsole');
+      const div = document.createElement('div');
+      div.textContent = msg;
+      consoleEl.appendChild(div);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
 
-            document.querySelectorAll('.tab-content').forEach(content => {
-                if (content.id === `tab-${tabName}`) {
-                    content.classList.remove('hidden');
-                } else {
-                    content.classList.add('hidden');
-                }
-            });
+    function clearSerialOutput() {
+      document.getElementById('serialConsole').innerHTML = '';
+    }
+
+    function sendSerialMsg() {
+      const input = document.getElementById('serialInput');
+      if (input.value.trim() !== '') {
+        logSerial("> " + input.value);
+        input.value = '';
+      }
+    }
+
+    function startFlashingProcess() {
+      const container = document.getElementById('flashProgressContainer');
+      const bar = document.getElementById('flashProgressBar');
+      const status = document.getElementById('flashStatusText');
+      const percent = document.getElementById('flashPercent');
+
+      container.classList.remove('hidden');
+      bar.style.width = '0%';
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        bar.style.width = progress + '%';
+        percent.textContent = progress + '%';
+
+        if (progress === 30) status.textContent = "Connecting to Bootloader...";
+        if (progress === 60) status.textContent = "Writing Flash Memory...";
+        if (progress === 90) status.textContent = "Verifying Firmware...";
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          status.textContent = "Upload Complete!";
+          logSerial("// Arduino Nano successfully flashed with sketch.ino!");
         }
-
-        function renderBOM() {
-            const tbody = document.getElementById('bomTableBody');
-            tbody.innerHTML = '';
-
-            PROJECT_BOM.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-900/40 transition";
-                tr.innerHTML = `
-                    <td class="p-2.5 text-center">
-                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleBom(${item.id})" class="rounded bg-slate-800 border-slate-700 text-brand-500 focus:ring-0 cursor-pointer">
-                    </td>
-                    <td class="p-2.5 font-medium text-slate-100">${item.name}</td>
-                    <td class="p-2.5 font-mono text-slate-400">${item.spec}</td>
-                    <td class="p-2.5 text-slate-400">${item.role}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            updateBomCount();
-        }
-
-        function toggleBom(id) {
-            const item = PROJECT_BOM.find(i => i.id === id);
-            if (item) {
-                item.checked = !item.checked;
-                updateBomCount();
-            }
-        }
-
-        function updateBomCount() {
-            const checkedCount = PROJECT_BOM.filter(i => i.checked).length;
-            document.getElementById('bomCountBadge').innerText = `${checkedCount} / ${PROJECT_BOM.length} Acquired`;
-        }
-
-        function renderCodeViewers() {
-            document.getElementById('jsonCodeViewer').innerText = JSON.stringify(DIAGRAM_JSON, null, 2);
-            document.getElementById('inoCodeViewer').innerText = SKETCH_INO;
-
-            // Copy buttons handlers
-            document.getElementById('copyJsonBtn').addEventListener('click', () => {
-                copyToClipboard(JSON.stringify(DIAGRAM_JSON, null, 2), "Circuit JSON copied!");
-            });
-
-            document.getElementById('copyInoBtn').addEventListener('click', () => {
-                copyToClipboard(SKETCH_INO, "Arduino sketch copied!");
-            });
-        }
-
-        function copyToClipboard(text, msg) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            appendTerminalLog(`[SYSTEM] ${msg}`);
-        }
-
-        function initCalculator() {
-            const stepsSlider = document.getElementById('stepsSlider');
-            const piezoSlider = document.getElementById('piezoSlider');
-
-            function updateCalc() {
-                const steps = parseInt(stepsSlider.value);
-                const piezos = parseInt(piezoSlider.value);
-
-                document.getElementById('stepsValText').innerText = `${steps.toLocaleString()} steps`;
-                document.getElementById('piezoCountText').innerText = `${piezos} Discs`;
-
-                // Calculation formulas
-                const joulesPerStep = 0.45 * (piezos * 0.8);
-                const totalJoules = steps * joulesPerStep;
-                const wattHours = totalJoules / 3600; // 1 Wh = 3600 Joules
-                
-                // Battery % of 12V 2200mAh (26.4 Wh)
-                const battPercent = Math.min(100, (wattHours / 26.4) * 100);
-                const ledHours = wattHours / 0.5; // 0.5W LED indicator
-
-                document.getElementById('calcEnergy').innerText = `${wattHours.toFixed(2)} Wh / day`;
-                document.getElementById('calcBattery').innerText = `${battPercent.toFixed(1)} % capacity`;
-                document.getElementById('calcLedTime').innerText = `~${ledHours.toFixed(1)} Hours`;
-            }
-
-            stepsSlider.addEventListener('input', updateCalc);
-            piezoSlider.addEventListener('input', updateCalc);
-            updateCalc();
-        }
-
-        function checkWebSerialSupport() {
-            const badge = document.getElementById('webSerialSupportBadge');
-            const text = document.getElementById('serialStatusText');
-            badge.classList.remove('hidden');
-
-            if ('serial' in navigator) {
-                text.innerText = "Supported";
-                text.className = "font-semibold text-emerald-400";
-            } else {
-                text.innerText = "Unsupported Browser";
-                text.className = "font-semibold text-rose-400";
-                appendTerminalLog("[WARNING] Web Serial API is not supported in this browser. Running in Simulation Mode.");
-            }
-        }
-
-        function initFlasherUI() {
-            const selectPortBtn = document.getElementById('selectPortBtn');
-            const flashDeviceBtn = document.getElementById('flashDeviceBtn');
-            const clearTerminalBtn = document.getElementById('clearTerminalBtn');
-            const sendTerminalBtn = document.getElementById('sendTerminalBtn');
-            const terminalInput = document.getElementById('terminalInput');
-
-            selectPortBtn.addEventListener('click', requestSerialPort);
-            flashDeviceBtn.addEventListener('click', startFlashingProcess);
-            clearTerminalBtn.addEventListener('click', () => {
-                document.getElementById('terminalConsole').innerHTML = '';
-            });
-
-            sendTerminalBtn.addEventListener('click', sendSerialData);
-            terminalInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') sendSerialData();
-            });
-        }
-
-        async function requestSerialPort() {
-            if (!('serial' in navigator)) {
-                appendTerminalLog("[SYSTEM] Using Simulated Serial Port (Browser lacks Web Serial).");
-                document.getElementById('portLabel').innerText = "COM3 (Simulated)";
-                document.getElementById('flasherStatusChip').innerText = "Connected (Sim)";
-                document.getElementById('flasherStatusChip').className = "px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-                return;
-            }
-
-            try {
-                serialPort = await navigator.serial.requestPort();
-                const baud = parseInt(document.getElementById('baudSelect').value);
-                await serialPort.open({ baudRate: baud });
-                
-                document.getElementById('portLabel').innerText = "Arduino Nano (USB)";
-                document.getElementById('flasherStatusChip').innerText = "Connected";
-                document.getElementById('flasherStatusChip').className = "px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-                
-                appendTerminalLog(`[SERIAL] Connected to USB serial port at ${baud} baud.`);
-                listenToSerialStream();
-            } catch (err) {
-                appendTerminalLog(`[ERROR] Failed to open serial port: ${err.message}`);
-            }
-        }
-
-        async function listenToSerialStream() {
-            while (serialPort && serialPort.readable) {
-                const textDecoder = new TextDecoderStream();
-                const readableStreamClosed = serialPort.readable.pipeTo(textDecoder.writable);
-                serialReader = textDecoder.readable.getReader();
-
-                try {
-                    while (true) {
-                        const { value, done } = await serialReader.read();
-                        if (done) break;
-                        if (value) appendTerminalLog(value);
-                    }
-                } catch (error) {
-                    appendTerminalLog(`[SERIAL ERROR] ${error.message}`);
-                } finally {
-                    serialReader.releaseLock();
-                }
-            }
-        }
-
-        async function sendSerialData() {
-            const input = document.getElementById('terminalInput');
-            const val = input.value.trim();
-            if (!val) return;
-
-            appendTerminalLog(`> ${val}`);
-            input.value = '';
-
-            if (serialPort && serialPort.writable) {
-                const encoder = new TextEncoder();
-                const writer = serialPort.writable.getWriter();
-                await writer.write(encoder.encode(val + '\n'));
-                writer.releaseLock();
-            } else {
-                // Mock echo response
-                setTimeout(() => {
-                    appendTerminalLog(`[ECHO] Received: ${val}`);
-                }, 200);
-            }
-        }
-
-        async function startFlashingProcess() {
-            if (isFlashing) return;
-            isFlashing = true;
-
-            const progressBar = document.getElementById('flashProgressBar');
-            const percentText = document.getElementById('progressPercent');
-            const stepText = document.getElementById('progressStepText');
-            const flashBtn = document.getElementById('flashDeviceBtn');
-
-            flashBtn.disabled = true;
-            appendTerminalLog("=========================================");
-            appendTerminalLog("[FLASHER] Initiating compilation & flash pipeline...");
-
-            const steps = [
-                { percent: 15, msg: "Parsing sketch.ino & generating C++ AST..." },
-                { percent: 35, msg: "Compiling with avr-g++ (ATmega328P target)..." },
-                { percent: 55, msg: "Generating Intel HEX binary firmware..." },
-                { percent: 70, msg: "Connecting to STK500 bootloader on Nano..." },
-                { percent: 85, msg: "Writing flash memory blocks (Page 0x00 - 0x3F)..." },
-                { percent: 95, msg: "Verifying checksum & flash memory integrity..." },
-                { percent: 100, msg: "Flash complete! Rebooting Arduino Nano..." }
-            ];
-
-            for (const step of steps) {
-                await new Promise(resolve => setTimeout(resolve, 600));
-                progressBar.style.width = `${step.percent}%`;
-                percentText.innerText = `${step.percent}%`;
-                stepText.innerText = step.msg;
-                appendTerminalLog(`[STK500] ${step.msg}`);
-            }
-
-            appendTerminalLog("[SUCCESS] Sketch successfully written to ATmega328P!");
-            appendTerminalLog("=========================================");
-
-            flashBtn.disabled = false;
-            isFlashing = false;
-
-            // Start simulated serial stream telemetry
-            startSimulatedTelemetry();
-        }
-
-        let telemetryInterval = null;
-        function startSimulatedTelemetry() {
-            if (telemetryInterval) clearInterval(telemetryInterval);
-            let steps = 42;
-            
-            telemetryInterval = setInterval(() => {
-                if (Math.random() > 0.6) steps++;
-                const volts = (Math.random() * 8.5 + 2.1).toFixed(2);
-                appendTerminalLog(`VOLTAGE:${volts}V | STEPS:${steps}`);
-            }, 1200);
-        }
-
-        function appendTerminalLog(msg) {
-            const consoleEl = document.getElementById('terminalConsole');
-            const line = document.createElement('div');
-            line.innerText = msg;
-            consoleEl.appendChild(line);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
-        }
-    </script>
+      }, 300);
+    }
+  </script>
 </body>
 </html>
